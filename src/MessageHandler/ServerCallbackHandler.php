@@ -1,0 +1,77 @@
+<?php
+
+namespace WechatOfficialAccountServerMessageBundle\MessageHandler;
+
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Tourze\DoctrineUpsertBundle\Service\UpsertManager;
+use WechatOfficialAccountBundle\Repository\AccountRepository;
+use WechatOfficialAccountBundle\Service\UserService;
+use WechatOfficialAccountServerMessageBundle\Entity\ServerMessage;
+use WechatOfficialAccountServerMessageBundle\Event\WechatOfficialAccountServerMessageRequestEvent;
+use WechatOfficialAccountServerMessageBundle\Message\ServerCallbackMessage;
+
+#[AsMessageHandler]
+class ServerCallbackHandler
+{
+    public function __construct(
+        private readonly LockFactory $lockFactory,
+        private readonly AccountRepository $accountRepository,
+        private readonly LoggerInterface $logger,
+        private readonly UserService $userService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly UpsertManager $upsertManager,
+    ) {
+    }
+
+    public function __invoke(ServerCallbackMessage $asyncMessage): ?WechatOfficialAccountServerMessageRequestEvent
+    {
+        $message = $asyncMessage->getMessage();
+
+        // 重复消息的处理
+        $lockKey = WechatOfficialAccountServerMessageRequestEvent::class . ServerMessage::genMsgId($message);
+        $lock = $this->lockFactory->createLock($lockKey);
+        if (!$lock->acquire()) {
+            return null;
+        }
+
+        $account = $this->accountRepository->find($asyncMessage->getAccountId());
+
+        try {
+            // 不管事件内怎么处理，我们先自己保证存一份消息
+            $localMsg = ServerMessage::createFromMessage($message);
+            $localMsg->setAccount($account);
+            $this->upsertManager->upsert($localMsg);
+
+            // 因为在这里我们也能拿到OpenID了，所以同时也要存库一次
+            $localUser = null;
+            try {
+                $localUser = $this->userService->updateUserByOpenId($account, $message['FromUserName']);
+            } catch (\Throwable $exception) {
+                $this->logger->error('同步微信公众号用户时发生错误', [
+                    'account' => $account,
+                    'message' => $message,
+                    'exception' => $exception,
+                ]);
+            }
+
+            // 分发事件
+            $event = new WechatOfficialAccountServerMessageRequestEvent();
+            $event->setMessage($localMsg);
+            $event->setAccount($account);
+            $event->setUser($localUser);
+            $this->eventDispatcher->dispatch($event);
+
+            return $event;
+        } catch (\Throwable $exception) {
+            $this->logger->error('微信公众号回调时发生错误', [
+                'exception' => $exception,
+            ]);
+            throw $exception;
+        } finally {
+            $lock->release();
+        }
+    }
+}
