@@ -7,8 +7,8 @@ use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Tourze\DoctrineUpsertBundle\Service\UpsertManager;
+use Tourze\WechatOfficialAccountContracts\UserLoaderInterface;
 use WechatOfficialAccountBundle\Repository\AccountRepository;
-use WechatOfficialAccountBundle\Service\UserService;
 use WechatOfficialAccountServerMessageBundle\Entity\ServerMessage;
 use WechatOfficialAccountServerMessageBundle\Event\WechatOfficialAccountServerMessageRequestEvent;
 use WechatOfficialAccountServerMessageBundle\Message\ServerCallbackMessage;
@@ -20,7 +20,7 @@ class ServerCallbackHandler
         private readonly LockFactory $lockFactory,
         private readonly AccountRepository $accountRepository,
         private readonly LoggerInterface $logger,
-        private readonly UserService $userService,
+        private readonly UserLoaderInterface $userLoader,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly UpsertManager $upsertManager,
     ) {
@@ -46,16 +46,7 @@ class ServerCallbackHandler
             $this->upsertManager->upsert($localMsg);
 
             // 因为在这里我们也能拿到OpenID了，所以同时也要存库一次
-            $localUser = null;
-            try {
-                $localUser = $this->userService->updateUserByOpenId($account, $message['FromUserName']);
-            } catch (\Throwable $exception) {
-                $this->logger->error('同步微信公众号用户时发生错误', [
-                    'account' => $account,
-                    'message' => $message,
-                    'exception' => $exception,
-                ]);
-            }
+            $localUser = $this->userLoader->syncUserByOpenId($account, $message['FromUserName']);
 
             // 分发事件
             $event = new WechatOfficialAccountServerMessageRequestEvent();
