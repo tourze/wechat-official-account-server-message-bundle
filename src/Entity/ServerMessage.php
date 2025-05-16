@@ -151,7 +151,7 @@ class ServerMessage
 
     public static function createFromMessage(array $message): static
     {
-        $localMsg = new static();
+        $localMsg = new self();
         $localMsg->setMsgId(static::genMsgId($message));
         $localMsg->setMsgType($message['MsgType']);
         $localMsg->setToUserName($message['ToUserName']);
