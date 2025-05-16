@@ -3,6 +3,7 @@
 namespace WechatOfficialAccountServerMessageBundle\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
+use Tourze\WechatOfficialAccountContracts\UserInterface;
 use WechatOfficialAccountBundle\Entity\Account;
 use WechatOfficialAccountServerMessageBundle\Entity\ServerMessage;
 
@@ -24,9 +25,9 @@ class WechatOfficialAccountServerMessageRequestEvent extends Event
     private Account $account;
 
     /**
-     * @var User|null 当前用户
+     * @var UserInterface|null 当前用户
      */
-    private ?User $user;
+    private ?UserInterface $user;
 
     public function getMessage(): ServerMessage
     {
@@ -48,12 +49,12 @@ class WechatOfficialAccountServerMessageRequestEvent extends Event
         $this->account = $account;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): void
+    public function setUser(?UserInterface $user): void
     {
         $this->user = $user;
     }
