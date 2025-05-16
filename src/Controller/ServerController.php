@@ -12,6 +12,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Tourze\WechatHelper\Encryptor;
 use Tourze\XML\XML;
 use WechatOfficialAccountBundle\Repository\AccountRepository;
+use WechatOfficialAccountServerMessageBundle\Message\ServerCallbackMessage;
+use WechatOfficialAccountServerMessageBundle\MessageHandler\ServerCallbackHandler;
 
 #[Route(path: '/wechat/official-account')]
 class ServerController extends AbstractController
@@ -127,7 +129,7 @@ class ServerController extends AbstractController
         }
 
         try {
-            if (0 === mb_stripos($content, '<')) {
+            if (0 === stripos($content, '<')) {
                 $content = XML::parse($content);
             } else {
                 // Handle JSON format.
