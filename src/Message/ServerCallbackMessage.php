@@ -2,7 +2,7 @@
 
 namespace WechatOfficialAccountServerMessageBundle\Message;
 
-use Tourze\Symfony\Async\Message\AsyncMessageInterface;
+use Tourze\AsyncContracts\AsyncMessageInterface;
 
 class ServerCallbackMessage implements AsyncMessageInterface
 {

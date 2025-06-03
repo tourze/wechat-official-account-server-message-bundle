@@ -35,6 +35,6 @@ class ServerCallbackMessageTest extends TestCase
     public function testImplementsAsyncMessageInterface(): void
     {
         $serverCallbackMessage = new ServerCallbackMessage();
-        $this->assertInstanceOf(\Tourze\Symfony\Async\Message\AsyncMessageInterface::class, $serverCallbackMessage);
+        $this->assertInstanceOf(\Tourze\AsyncContracts\AsyncMessageInterface::class, $serverCallbackMessage);
     }
 } 
