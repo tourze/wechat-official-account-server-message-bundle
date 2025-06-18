@@ -12,7 +12,7 @@ class WechatOfficialAccountServerMessageBundleTest extends TestCase
         $bundle = new WechatOfficialAccountServerMessageBundle();
         $dependencies = $bundle::getBundleDependencies();
         
-        $this->assertIsArray($dependencies);
+        $this->assertNotEmpty($dependencies);
         $this->assertArrayHasKey(\WechatOfficialAccountBundle\WechatOfficialAccountBundle::class, $dependencies);
         $this->assertEquals(['all' => true], $dependencies[\WechatOfficialAccountBundle\WechatOfficialAccountBundle::class]);
     }

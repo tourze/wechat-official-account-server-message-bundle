@@ -58,7 +58,7 @@ class ServerControllerTest extends TestCase
             ->with(['id' => '12345'])
             ->willReturn($account);
         
-        $response = $this->controller->server('12345', $request, $this->accountRepository, $this->logger);
+        $response = $this->controller->__invoke('12345', $request, $this->accountRepository, $this->logger);
         
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('test_echo_string', $response->getContent());
@@ -80,7 +80,7 @@ class ServerControllerTest extends TestCase
             ->method('error')
             ->with('找不到公众号', $this->anything());
             
-        $response = $this->controller->server('12345', $request, $this->accountRepository, $this->logger);
+        $response = $this->controller->__invoke('12345', $request, $this->accountRepository, $this->logger);
         
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('success', $response->getContent());
@@ -100,7 +100,7 @@ class ServerControllerTest extends TestCase
             ->method('error')
             ->with('找不到有效的提交请求内容', $this->anything());
             
-        $response = $this->controller->server('12345', $request, $this->accountRepository, $this->logger);
+        $response = $this->controller->__invoke('12345', $request, $this->accountRepository, $this->logger);
         
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('success', $response->getContent());
@@ -142,7 +142,7 @@ class ServerControllerTest extends TestCase
         $this->callbackHandler->expects($this->never())
             ->method('__invoke');
             
-        $response = $this->controller->server('12345', $request, $this->accountRepository, $this->logger);
+        $response = $this->controller->__invoke('12345', $request, $this->accountRepository, $this->logger);
         
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('success', $response->getContent());
@@ -184,7 +184,7 @@ class ServerControllerTest extends TestCase
             ->method('debug')
             ->with('最终响应微信公众号消息', $this->anything());
             
-        $response = $this->controller->server('12345', $request, $this->accountRepository, $this->logger);
+        $response = $this->controller->__invoke('12345', $request, $this->accountRepository, $this->logger);
         
         $this->assertInstanceOf(Response::class, $response);
         // 使用更灵活的断言，因为XML格式可能有所不同
@@ -225,7 +225,7 @@ class ServerControllerTest extends TestCase
             ->method('__invoke')
             ->willReturn($event);
             
-        $response = $this->controller->server('12345', $request, $this->accountRepository, $this->logger);
+        $response = $this->controller->__invoke('12345', $request, $this->accountRepository, $this->logger);
         
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('success', $response->getContent());
@@ -261,7 +261,7 @@ class ServerControllerTest extends TestCase
             ->method('__invoke')
             ->willReturn(null);
             
-        $response = $this->controller->server('12345', $request, $this->accountRepository, $this->logger);
+        $response = $this->controller->__invoke('12345', $request, $this->accountRepository, $this->logger);
         
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('success', $response->getContent());

@@ -10,10 +10,10 @@ class ServerMessageRepositoryTest extends TestCase
 {
     public function testInheritance(): void
     {
-        $this->assertTrue(is_subclass_of(
-            ServerMessageRepository::class,
-            ServiceEntityRepository::class
-        ));
+        $this->assertInstanceOf(
+            ServiceEntityRepository::class,
+            $this->createPartialMock(ServerMessageRepository::class, [])
+        );
     }
     
     public function testEntityClassIsCorrect(): void

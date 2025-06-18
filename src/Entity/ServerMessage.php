@@ -4,23 +4,15 @@ namespace WechatOfficialAccountServerMessageBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Filter\Filterable;
-use Tourze\EasyAdmin\Attribute\Filter\Keyword;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 use Tourze\ScheduleEntityCleanBundle\Attribute\AsScheduleClean;
 use WechatOfficialAccountBundle\Entity\Account;
 use WechatOfficialAccountServerMessageBundle\Repository\ServerMessageRepository;
 
 #[AsScheduleClean(expression: '26 5 * * *', defaultKeepDay: 7, keepDayEnv: 'WECHAT_OFFICIAL_ACCOUNT_MESSAGE_PERSIST_DAY_NUM')]
-#[AsPermission(title: '服务端消息')]
 #[ORM\Entity(repositoryClass: ServerMessageRepository::class)]
 #[ORM\Table(name: 'wechat_official_account_message', options: ['comment' => '服务端消息'])]
-class ServerMessage
+class ServerMessage implements \Stringable
 {
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
@@ -33,27 +25,18 @@ class ServerMessage
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '上下文'])]
     private ?array $context = [];
 
-    #[Keyword]
-    #[ListColumn]
     #[ORM\Column(type: Types::STRING, length: 64, unique: true, options: ['comment' => '唯一ID'])]
     private ?string $msgId = null;
 
-    #[Keyword]
-    #[ListColumn]
     #[ORM\Column(type: Types::STRING, length: 64, options: ['comment' => 'ToUserName'])]
     private ?string $toUserName = null;
 
-    #[Keyword]
-    #[ListColumn]
     #[ORM\Column(type: Types::STRING, length: 64, options: ['comment' => 'FromUserName'])]
     private ?string $fromUserName = null;
 
-    #[Filterable]
-    #[ListColumn]
     #[ORM\Column(type: Types::STRING, length: 30, options: ['comment' => '消息类型'])]
     private ?string $msgType = null;
 
-    #[ListColumn]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '创建时间戳'])]
     private ?int $createTime = null;
 
@@ -149,7 +132,7 @@ class ServerMessage
         return strval($message['MsgId'] ?? $message['FromUserName'] . '_' . $message['CreateTime']);
     }
 
-    public static function createFromMessage(array $message): static
+    public static function createFromMessage(array $message): self
     {
         $localMsg = new self();
         $localMsg->setMsgId(static::genMsgId($message));
@@ -160,5 +143,10 @@ class ServerMessage
         $localMsg->setContext($message);
 
         return $localMsg;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf('服务端消息 #%s', $this->id ?? 'new');
     }
 }

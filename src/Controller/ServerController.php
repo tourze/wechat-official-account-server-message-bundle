@@ -15,7 +15,6 @@ use WechatOfficialAccountBundle\Repository\AccountRepository;
 use WechatOfficialAccountServerMessageBundle\Message\ServerCallbackMessage;
 use WechatOfficialAccountServerMessageBundle\MessageHandler\ServerCallbackHandler;
 
-#[Route(path: '/wechat/official-account')]
 class ServerController extends AbstractController
 {
     public function __construct(
@@ -31,18 +30,18 @@ class ServerController extends AbstractController
      * @see https://developers.weixin.qq.com/community/develop/doc/000cc80466c478b44d4d6628056800
      * @see https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
      */
-    #[Route(path: '/server/{id}', methods: ['GET', 'POST'])]
-    public function server(
+    #[Route(path: '/wechat/official-account/server/{id}', methods: ['GET', 'POST'])]
+    public function __invoke(
         string $id,
         Request $request,
         AccountRepository $accountRepository,
         LoggerInterface $logger,
     ): Response {
         $account = $accountRepository->findOneBy(['id' => $id]);
-        if (!$account) {
+        if (null === $account) {
             $account = $accountRepository->findOneBy(['appId' => $id]);
         }
-        if (!$account) {
+        if (null === $account) {
             $logger->error('找不到公众号', [
                 'appId' => $id,
             ]);
@@ -86,7 +85,7 @@ class ServerController extends AbstractController
 
         $asyncMessage = new ServerCallbackMessage();
         $asyncMessage->setMessage($message);
-        $asyncMessage->setAccountId($account->getId());
+        $asyncMessage->setAccountId((string) $account->getId());
 
         // 有一些事件，我们其实不用回复的
         if (in_array($message['Event'] ?? '', [
@@ -101,11 +100,11 @@ class ServerController extends AbstractController
         }
 
         $event = $this->callbackHandler->__invoke($asyncMessage);
-        if (!$event) {
+        if (null === $event) {
             return new Response('success');
         }
 
-        if ($event->getResponse()) {
+        if (null !== $event->getResponse()) {
             $logger->debug('最终响应微信公众号消息', [
                 'message' => $event->getMessage(),
                 'response' => $event->getResponse(),
@@ -134,7 +133,7 @@ class ServerController extends AbstractController
             } else {
                 // Handle JSON format.
                 $dataSet = json_decode($content, true);
-                if ($dataSet && (JSON_ERROR_NONE === json_last_error())) {
+                if (null !== $dataSet && (JSON_ERROR_NONE === json_last_error())) {
                     $content = $dataSet;
                 }
             }
