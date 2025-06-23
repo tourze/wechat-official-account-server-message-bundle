@@ -231,11 +231,6 @@ class ServerControllerTest extends TestCase
         $this->assertEquals('success', $response->getContent());
     }
     
-    public function testServerWithEncryptedMessage(): void
-    {
-        $this->markTestSkipped('需要实际的加密实现，暂时跳过');
-    }
-    
     public function testServerWithNullCallbackHandlerResult(): void
     {
         $account = $this->createMock(Account::class);
