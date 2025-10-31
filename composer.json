@@ -31,7 +31,7 @@
     "tourze/bundle-dependency": "1.*",
     "tourze/doctrine-upsert-bundle": "0.1.*",
     "tourze/easy-admin-attribute": "0.1.*",
-    "tourze/easy-admin-menu-bundle": "0.1.*",
+    "tourze/easy-admin-menu-bundle": "1.0.*",
     "tourze/symfony-schedule-entity-clean-bundle": "0.1.*",
     "tourze/wechat-helper": "0.0.*",
     "tourze/wechat-official-account-bundle": "0.1.*",
@@ -42,9 +42,9 @@
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^11.5",
     "tourze/phpunit-doctrine-entity": "1.*",
-    "tourze/phpunit-symfony-kernel-test": "0.0.*",
+    "tourze/phpunit-symfony-kernel-test": "1.*",
     "tourze/phpunit-symfony-unit-test": "1.*",
-    "tourze/phpunit-symfony-web-test": "0.0.*",
+    "tourze/phpunit-symfony-web-test": "1.*",
     "tourze/symfony-dependency-service-loader": "1.*"
   },
   "autoload": {
