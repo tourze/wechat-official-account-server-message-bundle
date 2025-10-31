@@ -2,10 +2,16 @@
 
 namespace WechatOfficialAccountServerMessageBundle\Tests\Message;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Tourze\AsyncContracts\AsyncMessageInterface;
 use WechatOfficialAccountServerMessageBundle\Message\ServerCallbackMessage;
 
-class ServerCallbackMessageTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(ServerCallbackMessage::class)]
+final class ServerCallbackMessageTest extends TestCase
 {
     public function testGetSetMessage(): void
     {
@@ -18,23 +24,23 @@ class ServerCallbackMessageTest extends TestCase
             'ToUserName' => 'official456',
             'CreateTime' => time(),
         ];
-        
+
         $serverCallbackMessage->setMessage($message);
         $this->assertSame($message, $serverCallbackMessage->getMessage());
     }
-    
+
     public function testGetSetAccountId(): void
     {
         $serverCallbackMessage = new ServerCallbackMessage();
         $accountId = 'account_12345';
-        
+
         $serverCallbackMessage->setAccountId($accountId);
         $this->assertEquals($accountId, $serverCallbackMessage->getAccountId());
     }
-    
+
     public function testImplementsAsyncMessageInterface(): void
     {
         $serverCallbackMessage = new ServerCallbackMessage();
-        $this->assertInstanceOf(\Tourze\AsyncContracts\AsyncMessageInterface::class, $serverCallbackMessage);
+        $this->assertInstanceOf(AsyncMessageInterface::class, $serverCallbackMessage);
     }
-} 
+}

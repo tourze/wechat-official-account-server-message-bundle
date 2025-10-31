@@ -10,7 +10,7 @@ use WechatOfficialAccountServerMessageBundle\Entity\ServerMessage;
 class WechatOfficialAccountServerMessageRequestEvent extends Event
 {
     /**
-     * @var array|null 拦截响应的内容
+     * @var array<string, mixed>|null 拦截响应的内容
      */
     protected ?array $response = null;
 
@@ -59,11 +59,17 @@ class WechatOfficialAccountServerMessageRequestEvent extends Event
         $this->user = $user;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getResponse(): ?array
     {
         return $this->response;
     }
 
+    /**
+     * @param array<string, mixed>|null $response
+     */
     public function setResponse(?array $response): void
     {
         $this->response = $response;

@@ -2,6 +2,7 @@
 
 namespace WechatOfficialAccountServerMessageBundle\MessageHandler;
 
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -14,6 +15,7 @@ use WechatOfficialAccountServerMessageBundle\Event\WechatOfficialAccountServerMe
 use WechatOfficialAccountServerMessageBundle\Message\ServerCallbackMessage;
 
 #[AsMessageHandler]
+#[WithMonologChannel(channel: 'wechat_official_account_server_message')]
 class ServerCallbackHandler
 {
     public function __construct(
@@ -38,6 +40,13 @@ class ServerCallbackHandler
         }
 
         $account = $this->accountRepository->find($asyncMessage->getAccountId());
+        if (null === $account) {
+            $this->logger->error('找不到对应的公众号账号', [
+                'accountId' => $asyncMessage->getAccountId(),
+            ]);
+
+            return null;
+        }
 
         try {
             // 不管事件内怎么处理，我们先自己保证存一份消息
@@ -46,7 +55,9 @@ class ServerCallbackHandler
             $this->upsertManager->upsert($localMsg);
 
             // 因为在这里我们也能拿到OpenID了，所以同时也要存库一次
-            $localUser = $this->userLoader->syncUserByOpenId($account, $message['FromUserName']);
+            $fromUserName = $message['FromUserName'] ?? '';
+            $openId = is_string($fromUserName) || is_numeric($fromUserName) ? (string) $fromUserName : '';
+            $localUser = $this->userLoader->syncUserByOpenId($account, $openId);
 
             // 分发事件
             $event = new WechatOfficialAccountServerMessageRequestEvent();

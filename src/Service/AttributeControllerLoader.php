@@ -11,7 +11,7 @@ class AttributeControllerLoader
 {
     public function __construct(
         #[Autowire(service: 'routing.loader.attribute')]
-        private readonly AttributeClassLoader $controllerLoader
+        private readonly AttributeClassLoader $controllerLoader,
     ) {
     }
 
@@ -19,7 +19,7 @@ class AttributeControllerLoader
     {
         $collection = new RouteCollection();
         $collection->addCollection($this->controllerLoader->load(ServerController::class));
-        
+
         return $collection;
     }
 }
