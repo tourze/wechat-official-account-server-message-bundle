@@ -30,7 +30,7 @@
     "symfony/yaml": "^7.3",
     "tourze/async-contracts": "0.0.*",
     "tourze/bundle-dependency": "1.*",
-    "tourze/doctrine-upsert-bundle": "0.1.*",
+    "tourze/doctrine-upsert-bundle": "1.0.*",
     "tourze/easy-admin-attribute": "0.1.*",
     "tourze/easy-admin-menu-bundle": "1.0.*",
     "tourze/symfony-schedule-entity-clean-bundle": "1.0.*",
