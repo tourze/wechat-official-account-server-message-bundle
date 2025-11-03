@@ -52,11 +52,13 @@ final class ServerMessageCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        // 作为只读日志实体，表单不展示任何可编辑字段
         yield IdField::new('id', 'ID')->hideOnForm();
 
         yield AssociationField::new('account', '公众号账号')
             ->setRequired(true)
             ->setHelp('关联的微信公众号账号')
+            ->hideOnForm()
             ->formatValue(function ($value) {
                 if ($value instanceof Account) {
                     return $value->getName();
@@ -70,29 +72,34 @@ final class ServerMessageCrudController extends AbstractCrudController
             ->setRequired(true)
             ->setMaxLength(64)
             ->setHelp('微信消息唯一标识符')
+            ->hideOnForm()
         ;
 
         yield TextField::new('msgType', '消息类型')
             ->setRequired(true)
             ->setMaxLength(30)
             ->setHelp('消息类型，如text、image、voice等')
+            ->hideOnForm()
         ;
 
         yield TextField::new('fromUserName', '发送用户')
             ->setRequired(true)
             ->setMaxLength(64)
             ->setHelp('消息发送方OpenID')
+            ->hideOnForm()
         ;
 
         yield TextField::new('toUserName', '接收用户')
             ->setRequired(true)
             ->setMaxLength(64)
             ->setHelp('消息接收方（公众号原始ID）')
+            ->hideOnForm()
         ;
 
         yield IntegerField::new('createTime', '消息时间戳')
             ->setHelp('微信服务器推送的消息创建时间戳')
             ->hideOnIndex()
+            ->hideOnForm()
             ->formatValue(function ($value, $entity) {
                 if ($entity instanceof ServerMessage && null !== $entity->getCreateTime()) {
                     return $entity->getCreateTime();
@@ -111,6 +118,7 @@ final class ServerMessageCrudController extends AbstractCrudController
             ->setLanguage('javascript')
             ->setHelp('完整的消息JSON数据')
             ->hideOnIndex()
+            ->hideOnForm()
             ->formatValue(function ($value) {
                 if (null === $value || !is_array($value)) {
                     return '{}';
@@ -125,6 +133,10 @@ final class ServerMessageCrudController extends AbstractCrudController
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            // 该实体为只读日志，不允许新建或编辑
+            ->disable(Action::NEW, Action::EDIT)
+            // 删除操作仅限管理员，如需完全只读可改为同时禁用 DELETE
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
         ;
     }
 

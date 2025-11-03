@@ -5,6 +5,7 @@ namespace WechatOfficialAccountServerMessageBundle\Tests\Service;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Loader\AttributeClassLoader;
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use WechatOfficialAccountServerMessageBundle\Controller\ServerController;
 use WechatOfficialAccountServerMessageBundle\Service\AttributeControllerLoader;
@@ -23,7 +24,7 @@ final class AttributeControllerLoaderTest extends TestCase
     {
         $expectedCollection = new RouteCollection();
 
-        $this->controllerLoader = new class ($expectedCollection) extends AttributeClassLoader {
+        $this->controllerLoader = new class($expectedCollection) extends AttributeClassLoader {
             private RouteCollection $expectedCollection;
 
             public function __construct(RouteCollection $expectedCollection)
@@ -40,7 +41,7 @@ final class AttributeControllerLoaderTest extends TestCase
             /**
              * @phpstan-ignore missingType.generics
              */
-            protected function configureRoute(\Symfony\Component\Routing\Route $route, \ReflectionClass $class, \ReflectionMethod $method, object $annot): void
+            protected function configureRoute(Route $route, \ReflectionClass $class, \ReflectionMethod $method, object $annot): void
             {
                 // No-op for testing
             }
