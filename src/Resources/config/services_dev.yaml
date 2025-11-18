@@ -10,4 +10,4 @@ services:
 
   # 依赖的外部服务（用于测试环境）
   Tourze\WechatOfficialAccountContracts\UserLoaderInterface:
-    class: Tourze\WechatOfficialAccountContracts\Tests\MockUserLoader
+    class: Tourze\WechatOfficialAccountContracts\Mock\MockUserLoader
