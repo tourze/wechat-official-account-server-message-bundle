@@ -37,6 +37,7 @@
     "tourze/wechat-helper": "0.0.*",
     "tourze/wechat-official-account-bundle": "0.1.*",
     "tourze/wechat-official-account-contracts": "0.0.*",
+    "tourze/wechat-official-account-oauth2-bundle": "0.0.*",
     "tourze/xml-helper": "0.0.*"
   },
   "require-dev": {
